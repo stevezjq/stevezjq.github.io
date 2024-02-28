@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>welcome to my blog!</title>
+  <title>steve&#39;s blog</title>
   
-  <subtitle>有志者，事竟成</subtitle>
+  <subtitle>就是玩</subtitle>
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
