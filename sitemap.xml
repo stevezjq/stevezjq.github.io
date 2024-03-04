@@ -2,18 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://stevezjq.github.io/manifest.json</loc>
+    <loc>http://stevezjq.github.io/posts/ca8bfdf3.html</loc>
     
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-04</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://stevezjq.github.io/posts/4a17b156.html</loc>
+    <loc>http://stevezjq.github.io/manifest.json</loc>
     
-    <lastmod>2024-02-27</lastmod>
+    <lastmod>2024-02-29</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -28,6 +28,20 @@
   </url>
 
   
+  <url>
+    <loc>http://stevezjq.github.io/tags/%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2024-03-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
+  
+  <url>
+    <loc>http://stevezjq.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2024-03-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
 </urlset>
