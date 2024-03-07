@@ -2,6 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://stevezjq.github.io/posts/9daba997.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/posts/ca8bfdf3.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/digital-hardware/index.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/lifestyle/index.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/game/index.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/programme/index.html</loc>
+    
+    <lastmod>2024-03-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://stevezjq.github.io/link/index.html</loc>
     
     <lastmod>2024-03-05</lastmod>
@@ -29,15 +83,6 @@
   </url>
   
   <url>
-    <loc>http://stevezjq.github.io/posts/ca8bfdf3.html</loc>
-    
-    <lastmod>2024-03-05</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://stevezjq.github.io/manifest.json</loc>
     
     <lastmod>2024-02-29</lastmod>
@@ -49,7 +94,7 @@
 
   <url>
     <loc>http://stevezjq.github.io/</loc>
-    <lastmod>2024-03-06</lastmod>
+    <lastmod>2024-03-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -57,7 +102,7 @@
   
   <url>
     <loc>http://stevezjq.github.io/tags/%E6%B5%8B%E8%AF%95/</loc>
-    <lastmod>2024-03-06</lastmod>
+    <lastmod>2024-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -66,7 +111,14 @@
   
   <url>
     <loc>http://stevezjq.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2024-03-06</lastmod>
+    <lastmod>2024-03-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://stevezjq.github.io/categories/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/</loc>
+    <lastmod>2024-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
