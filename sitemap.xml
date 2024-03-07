@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://stevezjq.github.io/posts/9daba997.html</loc>
+    <loc>http://stevezjq.github.io/lifestyle/%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2.html</loc>
     
     <lastmod>2024-03-07</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>http://stevezjq.github.io/lifestyle/%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2.html</loc>
+    <loc>http://stevezjq.github.io/posts/9daba997.html</loc>
     
     <lastmod>2024-03-07</lastmod>
     
@@ -30,15 +30,6 @@
   
   <url>
     <loc>http://stevezjq.github.io/posts/ca8bfdf3.html</loc>
-    
-    <lastmod>2024-03-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://stevezjq.github.io/lifestyle/index.html</loc>
     
     <lastmod>2024-03-07</lastmod>
     
@@ -119,14 +110,14 @@
 
   
   <url>
-    <loc>http://stevezjq.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>http://stevezjq.github.io/categories/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/</loc>
     <lastmod>2024-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://stevezjq.github.io/categories/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/</loc>
+    <loc>http://stevezjq.github.io/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2024-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
