@@ -62,17 +62,6 @@
     
     
     <entry>
-      <title>分类</title>
-      <link href="/categories/index.html"/>
-      <url>/categories/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title></title>
       <link href="/css/custom.css"/>
       <url>/css/custom.css</url>
@@ -84,9 +73,9 @@
     
     
     <entry>
-      <title>game</title>
-      <link href="/game/index.html"/>
-      <url>/game/index.html</url>
+      <title>分类</title>
+      <link href="/categories/index.html"/>
+      <url>/categories/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -99,7 +88,18 @@
       <link href="/digital_hardware/index.html"/>
       <url>/digital_hardware/index.html</url>
       
-        <content type="html"><![CDATA[<p>000111</p>]]></content>
+        <content type="html"><![CDATA[<figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src="https://s21.ax1x.com/2024/03/07/pFsC3jJ.jpg" alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">编程</div>  <p>开发中</p>  <a href="https://www.stevezjq.cn/programme"></a>  </figcaption>  </figure>  ]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>game</title>
+      <link href="/game/index.html"/>
+      <url>/game/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
       
     </entry>
     
