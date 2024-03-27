@@ -6,7 +6,7 @@
   <link href="http://stevezjq.github.io/atom.xml" rel="self"/>
   
   <link href="http://stevezjq.github.io/"/>
-  <updated>2024-03-21T09:31:18.307Z</updated>
+  <updated>2024-03-27T08:55:24.261Z</updated>
   <id>http://stevezjq.github.io/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>python实现维吉尼亚密码</title>
+    <link href="http://stevezjq.github.io/posts/adc85227.html"/>
+    <id>http://stevezjq.github.io/posts/adc85227.html</id>
+    <published>2024-03-27T08:07:10.000Z</published>
+    <updated>2024-03-27T08:55:24.261Z</updated>
+    
+    <content type="html"><![CDATA[<p>points：<br><div class="note info flat"><p>1.ASCII码的转换</p></div><br><div class="note info flat"><p>2.对input函数的理解</p></div><br><div class="note info flat"><p>3.append函数的使用</p></div></p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import getch</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_str</span>(<span class="params"><span class="built_in">str</span></span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;please input plaintext:&quot;</span>)</span><br><span class="line">    chars = <span class="built_in">input</span>()</span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> chars:</span><br><span class="line">        <span class="built_in">str</span>.append(char)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_secret_key</span>(<span class="params">ints</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;please input secret key:&quot;</span>)</span><br><span class="line">    keys = <span class="built_in">input</span>()</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> keys:</span><br><span class="line">        <span class="built_in">int</span> = <span class="built_in">ord</span>(key) - <span class="number">97</span></span><br><span class="line">        ints.append(<span class="built_in">int</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encryption</span>(<span class="params"><span class="built_in">str</span>, ints, en_str</span>):</span><br><span class="line">    ints_length = <span class="built_in">len</span>(ints)</span><br><span class="line">    str_length = <span class="built_in">len</span>(<span class="built_in">str</span>)</span><br><span class="line">    a = <span class="built_in">int</span>(str_length / ints_length)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, a):</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(ints_length):</span><br><span class="line">            <span class="comment"># if str[i * j] == &quot;&quot;:</span></span><br><span class="line">            <span class="comment">#     break</span></span><br><span class="line">            temp_ascii = <span class="built_in">ord</span>(<span class="built_in">str</span>[i + j*(ints_length)])</span><br><span class="line">            temp_int = (temp_ascii + ints[i] - <span class="number">97</span>)%<span class="number">26</span></span><br><span class="line">            temp_char = <span class="built_in">chr</span>(temp_int+<span class="number">65</span>)</span><br><span class="line">            en_str.append(temp_char)</span><br><span class="line">    b=str_length-ints_length*a</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,b):</span><br><span class="line">        temp_ascii = <span class="built_in">ord</span>(<span class="built_in">str</span>[ints_length*a+i])</span><br><span class="line">        temp_int = (temp_ascii + ints[i] - <span class="number">97</span>) % <span class="number">26</span></span><br><span class="line">        temp_char = <span class="built_in">chr</span>(temp_int + <span class="number">65</span>)</span><br><span class="line">        en_str.append(temp_char)</span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> en_str:</span><br><span class="line">        <span class="built_in">print</span>(element, end=<span class="string">&#x27; &#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="built_in">str</span> = []</span><br><span class="line">    ints = []</span><br><span class="line">    en_str = []</span><br><span class="line">    get_str(<span class="built_in">str</span>)</span><br><span class="line">    get_secret_key(ints)</span><br><span class="line">    encryption(<span class="built_in">str</span>, ints, en_str)</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;points：&lt;br&gt;&lt;div class=&quot;note info flat&quot;&gt;&lt;p&gt;1.ASCII码的转换&lt;/p&gt;
+&lt;/div&gt;&lt;br&gt;&lt;div class=&quot;note info flat&quot;&gt;&lt;p&gt;2.对input函数的理解&lt;/p&gt;
+&lt;/div&gt;&lt;br&gt;&lt;div class</summary>
+      
+    
+    
+    
+    <category term="编程" scheme="http://stevezjq.github.io/categories/%E7%BC%96%E7%A8%8B/"/>
+    
+    
+    <category term="密码学" scheme="http://stevezjq.github.io/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
     <title>个人对AMD和NVIDIA显卡的浅谈和比较</title>
     <link href="http://stevezjq.github.io/posts/52e36df5.html"/>
     <id>http://stevezjq.github.io/posts/52e36df5.html</id>
     <published>2024-03-21T09:23:35.000Z</published>
-    <updated>2024-03-21T09:31:18.307Z</updated>
+    <updated>2024-03-27T08:56:47.197Z</updated>
     
     <content type="html"><![CDATA[<div class="note warning disabled"><p>写前叠甲：本人对显卡了解不是非常深刻，发表的观点仅个人看法，如有疑问或意见敬请讨论</p></div>]]></content>
     
@@ -38,6 +64,8 @@
     <category term="硬件" scheme="http://stevezjq.github.io/categories/%E7%A1%AC%E4%BB%B6/"/>
     
     
+    <category term="显卡" scheme="http://stevezjq.github.io/tags/%E6%98%BE%E5%8D%A1/"/>
+    
   </entry>
   
   <entry>
@@ -45,7 +73,7 @@
     <link href="http://stevezjq.github.io/posts/d32097ac.html"/>
     <id>http://stevezjq.github.io/posts/d32097ac.html</id>
     <published>2024-03-11T06:49:12.000Z</published>
-    <updated>2024-03-21T09:20:29.560Z</updated>
+    <updated>2024-03-27T08:32:46.665Z</updated>
     
     <content type="html"><![CDATA[<p>水一篇文章—-<br>很简单:)</p><p>关键点：<br><div class="note info flat"><p>1.fgets函数的使用</p></div><br><div class="note info flat"><p>2.ASCII码</p></div><br><div class="note info flat"><p>3.可使用malloc语句为字符数组进行动态内存分配</p></div></p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;please input:\n&quot;</span>);</span><br><span class="line"><span class="type">char</span> str[<span class="number">100</span>];</span><br><span class="line">fgets(str, <span class="keyword">sizeof</span>(str), <span class="built_in">stdin</span>);</span><br><span class="line"><span class="keyword">while</span> (str[i + <span class="number">1</span>])</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> ((str[i] &lt;= <span class="string">&#x27;c&#x27;</span> &amp;&amp; str[i] &gt;= <span class="string">&#x27;a&#x27;</span>) || (str[i] &lt;= <span class="string">&#x27;C&#x27;</span> &amp;&amp; str[i] &gt;= <span class="string">&#x27;A&#x27;</span>))</span><br><span class="line">&#123;</span><br><span class="line">str[i] = str[i] + <span class="number">23</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%c&quot;</span>, str[i]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((str[i] &gt;= <span class="string">&#x27;d&#x27;</span> &amp;&amp; str[i] &lt;= <span class="string">&#x27;z&#x27;</span>) || (str[i] &gt;= <span class="string">&#x27;D&#x27;</span> &amp;&amp; str[i] &lt;= <span class="string">&#x27;Z&#x27;</span>))</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%c&quot;</span>, str[i] - <span class="number">3</span>);</span><br><span class="line">&#125;</span><br><span class="line">i++;</span><br><span class="line"><span class="keyword">if</span> (str[i] == (<span class="type">char</span>)<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
     
@@ -63,6 +91,8 @@
     <category term="编程" scheme="http://stevezjq.github.io/categories/%E7%BC%96%E7%A8%8B/"/>
     
     
+    <category term="密码学" scheme="http://stevezjq.github.io/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
   </entry>
   
   <entry>
@@ -70,7 +100,7 @@
     <link href="http://stevezjq.github.io/posts/9daba997.html"/>
     <id>http://stevezjq.github.io/posts/9daba997.html</id>
     <published>2024-03-07T03:40:08.000Z</published>
-    <updated>2024-03-15T06:19:32.253Z</updated>
+    <updated>2024-03-27T08:22:37.175Z</updated>
     
     <content type="html"><![CDATA[<p>点击这里，选择你喜欢的话题&nbsp------------------------------------------------------------------------------------------------------------------></p><div class="gallery-group-main"><figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsC3jJ.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">编程</div>  <p>开发中</p>  <a href='https://www.stevezjq.cn/programme'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFs9z7t.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">硬件</div>  <p>如果你对电脑硬件及数码设备感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/digital_hardware'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFr6FQ1.png' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">游戏</div>  <p>如果你对游戏尤其是3A大作感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/game'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsCUN6.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">生活</div>  <p>闲聊的地方</p>  <a href='https://www.stevezjq.cn/categories/%E7%94%9F%E6%B4%BB/'></a>  </figcaption>  </figure>  </div>]]></content>
     
@@ -94,7 +124,7 @@
     <link href="http://stevezjq.github.io/posts/ca8bfdf3.html"/>
     <id>http://stevezjq.github.io/posts/ca8bfdf3.html</id>
     <published>2024-03-04T08:33:43.000Z</published>
-    <updated>2024-03-15T06:07:42.742Z</updated>
+    <updated>2024-03-27T08:31:56.878Z</updated>
     
     <content type="html"><![CDATA[<p>欢迎来到我的博客！</p>]]></content>
     
