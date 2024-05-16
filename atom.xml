@@ -148,17 +148,17 @@
     <link href="http://stevezjq.github.io/posts/52e36df5.html"/>
     <id>http://stevezjq.github.io/posts/52e36df5.html</id>
     <published>2024-02-21T09:23:35.000Z</published>
-    <updated>2024-05-07T04:26:25.483Z</updated>
+    <updated>2024-05-16T04:49:53.064Z</updated>
     
-    <content type="html"><![CDATA[<div class="note warning disabled"><p>写前叠甲：本人对显卡了解不是非常深刻，发表的观点仅个人看法，如有疑问或意见敬请讨论</p></div><ol><li>传统性能：<br>在上一代30系和6000系的对决中，双方卡皇3090ti和6950xt可以说是打的难分难解。其中，90ti以其强大的传统性能和24g显存在ai领域大展身手，6950xt以其便宜的价格称霸高端游戏显卡，至今仍是4000价位（二手）显卡的推荐。<br>而对于去年推出的40系和7000系，AMD在旗舰显卡上黯然失色。黄皮衣刀客一刀砍    出的4090领先上代旗舰接近2倍的性能，timespy跑分接近40000领先7900xtx一万    多，以至于在旗舰市场几乎所有的用户都选择了n卡。</li><li>规格参数：<br>n卡在旗舰用料确实很足，但在甜品卡和入门卡用料却非常吝啬。例如今年争议非常大的4060ti和4070ti，一个作为2k大众卡一个作为4k大众卡，60ti给到的规格却只有128bit的位宽和8g显存，以至于部分3a在2k全高画质下会出现爆显存和卡顿的情况。70ti给到的也只有192bit的位宽和12g显存。一个接近3000的显卡在2k下不能畅玩，我想这是大部分60ti用户所诟病的。反观同性能的7700xt（192bit12g）和7900xt（320bit20g），规格参数完胜。</li><li>价格优势：<br>a卡一直有着“性价比”的美称，这是因为当两家显卡性能相同时，a卡的价格一般会低10%左右。例如热卖的4060ti和6750gre，二者性能相同，6750gre却只有4060的价格。高端市场的7900xtx（7000左右）和4080super（接近9000）也是如此。</li><li>游戏支持：<br>众所周知，自2017年之后a、n两家推出了超分辨率缩放功能：fsr和dlss。至今（24年4月）fsr已更新至fsr3.0，dlss已更新至dlss3.5。近几年的游戏普遍优化差，重点点名看门狗系列和美末，需要dlss这种物理外挂才能保持高帧率。在steam显卡占用排行榜中，n卡的占比超过7成，这也使得许多游戏偏n优化，只有dlss没有fsr，而dlss只有rtx显卡能用，gtx和a卡是不能使用的。许多网游例如永劫无间这种也是偏n优化。再来说说两家的黑科技帧生成，dlss3已有上百款游戏支持，而fsr3支持的游戏屈指可数。虽然有dlss转fsr的第三方补丁，效果肯定远不如原生的dlss3。</li><li>AI领域：<br>不做过多赘述，n卡的卖点之一就是他们的cuda核心，兼容一众的生产力软件。</li><li>一些谣言和误区：<br>1) a卡掉驱动：在5000系之后，a卡掉驱动的例子鲜为人知。不仅仅a，n卡也会掉，    在供电不足、超频、硬件损坏的情况下会大大增加掉驱动的概率。6000、7000系已经    做到了同n一样的稳定。<br>2) n卡颜色偏灰，a卡鲜艳：在nVidia图形设置中将颜色输出模式改为0-255完全。Amd    则是自动将其设为完全<br>3) n卡游戏画面糊，a卡清晰：amd驱动中会自动将游戏打上80%的锐化，n卡可alt+f3    手动加上锐化和使明朗。<br>4) n卡显存占用比a卡低，是不是n卡偷画质了？：a、n两家显存压缩技术不同，n    卡技术更成熟。</li></ol>]]></content>
+    <content type="html"><![CDATA[<div class="note warning modern"><p>写前叠甲：本人对显卡了解不是非常深刻，发表的观点仅个人看法，如有疑问或意见敬请讨论</p></div><ol><li>传统性能：<br>在上一代30系和6000系的对决中，双方卡皇3090ti和6950xt可以说是打的难分难解。其中，90ti以其强大的传统性能和24g显存在ai领域大展身手，6950xt以其便宜的价格称霸高端游戏显卡，至今仍是4000价位（二手）显卡的推荐。<br>而对于去年推出的40系和7000系，AMD在旗舰显卡上黯然失色。黄皮衣刀客一刀砍出的4090领先上代旗舰接近2倍的性能，timespy跑分接近40000领先7900xtx一万    多，以至于在旗舰市场几乎所有的用户都选择了n卡。</li><li>规格参数：<br>n卡在旗舰用料确实很足，但在甜品卡和入门卡用料却非常吝啬。例如今年争议非常大的4060ti和4070ti，一个作为2k大众卡一个作为4k大众卡，60ti给到的规格却只有128bit的位宽和8g显存，以至于部分3a在2k全高画质下会出现爆显存和卡顿的情况。70ti给到的也只有192bit的位宽和12g显存。一个接近3000的显卡在2k下不能畅玩，我想这是大部分60ti用户所诟病的。反观同性能的7700xt（192bit12g）和7900xt（320bit20g），规格参数完胜。<br><img src="https://s21.ax1x.com/2024/05/16/pknDwX6.jpg" alt=""></li><li>价格优势：<br>a卡一直有着“性价比”的美称，这是因为当两家显卡性能相同时，a卡的价格一般会低10%左右。例如热卖的4060ti和6750gre，二者性能相同，6750gre却只有4060的价格。高端市场的7900xtx（7000左右）和4080super（接近9000）也是如此。</li><li>游戏支持：<br>众所周知，自2017年之后a、n两家推出了超分辨率缩放功能：fsr和dlss。至今（24年4月）fsr已更新至fsr3.0，dlss已更新至dlss3.5。近几年的游戏普遍优化差，重点点名看门狗系列和美末，需要dlss这种物理外挂才能保持高帧率。在steam显卡占用排行榜中，n卡的占比超过7成，这也使得许多游戏偏n优化，只有dlss没有fsr，而dlss只有rtx显卡能用，gtx和a卡是不能使用的。许多网游例如永劫无间这种也是偏n优化。再来说说两家的黑科技帧生成，dlss3已有上百款游戏支持，而fsr3支持的游戏屈指可数。虽然有dlss转fsr的第三方补丁，效果肯定远不如原生的dlss3。<br><img src="https://s21.ax1x.com/2024/05/16/pknDBnK.jpg" alt=""></li><li>AI领域：<br>不做过多赘述，n卡的卖点之一就是他们的cuda核心，兼容一众的生产力软件。</li><li>一些谣言和误区：<br>1) a卡掉驱动：在5000系之后，a卡掉驱动的例子鲜为人知。不仅仅a，n卡也会掉，    在供电不足、超频、硬件损坏的情况下会大大增加掉驱动的概率。6000、7000系已经    做到了同n一样的稳定。<br>2) n卡颜色偏灰，a卡鲜艳：在nVidia图形设置中将颜色输出模式改为0-255完全。Amd    则是自动将其设为完全<br>3) n卡游戏画面糊，a卡清晰：amd驱动中会自动将游戏打上80%的锐化，n卡可alt+f3    手动加上锐化和使明朗。<br>4) n卡显存占用比a卡低，是不是n卡偷画质了？：a、n两家显存压缩技术不同，n    卡技术更成熟。</li></ol>]]></content>
     
     
       
       
-    <summary type="html">&lt;div class=&quot;note warning disabled&quot;&gt;&lt;p&gt;写前叠甲：本人对显卡了解不是非常深刻，发表的观点仅个人看法，如有疑问或意见敬请讨论&lt;/p&gt;
+    <summary type="html">&lt;div class=&quot;note warning modern&quot;&gt;&lt;p&gt;写前叠甲：本人对显卡了解不是非常深刻，发表的观点仅个人看法，如有疑问或意见敬请讨论&lt;/p&gt;
 &lt;/div&gt;
 &lt;ol&gt;
-&lt;li&gt;传统性能：&lt;br&gt;在上一代30系和6000系的对决中，双方卡皇3090ti和69</summary>
+&lt;li&gt;传统性能：&lt;br&gt;在上一代30系和6000系的对决中，双方卡皇3090ti和6950</summary>
       
     
     
@@ -175,14 +175,16 @@
     <link href="http://stevezjq.github.io/posts/9daba997.html"/>
     <id>http://stevezjq.github.io/posts/9daba997.html</id>
     <published>2024-01-07T03:40:08.000Z</published>
-    <updated>2024-05-07T04:26:09.556Z</updated>
+    <updated>2024-05-16T04:48:12.299Z</updated>
     
-    <content type="html"><![CDATA[<p>点击这里，选择你喜欢的话题&nbsp------------------------------------------------------------------------------------------------------------------></p><div class="gallery-group-main"><figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsC3jJ.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">编程</div>  <p>开发中</p>  <a href='https://www.stevezjq.cn/categories/%E7%BC%96%E7%A8%8B/'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFs9z7t.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">硬件</div>  <p>如果你对电脑硬件及数码设备感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/categories/%E7%A1%AC%E4%BB%B6/'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFr6FQ1.png' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">游戏</div>  <p>如果你对游戏尤其是3A大作感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/game'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsCUN6.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">生活</div>  <p>闲聊的地方</p>  <a href='https://www.stevezjq.cn/categories/%E7%94%9F%E6%B4%BB/'></a>  </figcaption>  </figure>  </div>]]></content>
+    <content type="html"><![CDATA[<div class="note success modern"><p>点击这里，选择你喜欢的话题</p></div><p>&nbsp------------------------------------------------------------------------------------------------------------------></p><div class="gallery-group-main"><figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsC3jJ.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">编程</div>  <p>开发中</p>  <a href='https://www.stevezjq.cn/categories/%E7%BC%96%E7%A8%8B/'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFs9z7t.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">硬件</div>  <p>如果你对电脑硬件及数码设备感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/categories/%E7%A1%AC%E4%BB%B6/'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFr6FQ1.png' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">游戏</div>  <p>如果你对游戏尤其是3A大作感兴趣，点击这里</p>  <a href='https://www.stevezjq.cn/game'></a>  </figcaption>  </figure>  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://s21.ax1x.com/2024/03/07/pFsCUN6.jpg' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">生活</div>  <p>闲聊的地方</p>  <a href='https://www.stevezjq.cn/categories/%E7%94%9F%E6%B4%BB/'></a>  </figcaption>  </figure>  </div>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;点击这里，选择你喜欢的话题&amp;nbsp------------------------------------------------------------------------------------------------------------------&gt;&lt;/p&gt;</summary>
+    <summary type="html">&lt;div class=&quot;note success modern&quot;&gt;&lt;p&gt;点击这里，选择你喜欢的话题&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;&amp;nbsp-----------------------------------------------------------------------</summary>
       
     
     
@@ -199,15 +201,16 @@
     <link href="http://stevezjq.github.io/posts/ca8bfdf3.html"/>
     <id>http://stevezjq.github.io/posts/ca8bfdf3.html</id>
     <published>2023-12-25T08:33:43.000Z</published>
-    <updated>2024-05-07T04:25:49.748Z</updated>
+    <updated>2024-05-16T04:50:07.525Z</updated>
     
-    <content type="html"><![CDATA[<p>欢迎来到我的博客！</p>]]></content>
+    <content type="html"><![CDATA[<div class="note primary disabled"><p>欢迎来到我的博客！</p></div><p>本站建立的初衷是，记录博主大学阶段所学、所看、所想之事物，若在今后人生中迷茫或入歧途，可打开本站重新寻找灵感。<br>同时，欢迎所有参观本站的朋友。</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;欢迎来到我的博客！&lt;/p&gt;
-</summary>
+    <summary type="html">&lt;div class=&quot;note primary disabled&quot;&gt;&lt;p&gt;欢迎来到我的博客！&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;本站建立的初衷是，记录博主大学阶段所学、所看、所想之事物，若在今后人生中迷茫或入歧途，可打开本站重新寻找灵感。&lt;br&gt;同时，欢迎所有参观本站的朋友。&lt;/p&gt;</summary>
       
     
     
