@@ -6,7 +6,7 @@
   <link href="http://stevezjq.github.io/atom.xml" rel="self"/>
   
   <link href="http://stevezjq.github.io/"/>
-  <updated>2024-05-16T08:08:27.609Z</updated>
+  <updated>2024-11-26T12:30:24.756Z</updated>
   <id>http://stevezjq.github.io/</id>
   
   <author>
@@ -17,11 +17,35 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Sudo/sudo_debug格式化字符串漏洞</title>
+    <link href="http://stevezjq.github.io/posts/72ce4e2b.html"/>
+    <id>http://stevezjq.github.io/posts/72ce4e2b.html</id>
+    <published>2024-11-26T12:16:54.000Z</published>
+    <updated>2024-11-26T12:30:24.756Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Sudo-sudo-debug格式化字符串漏洞"><a href="#Sudo-sudo-debug格式化字符串漏洞" class="headerlink" title="Sudo/sudo_debug格式化字符串漏洞"></a>Sudo/sudo_debug格式化字符串漏洞</h1><h2 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h2><h4 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h4><p>​    学习漏洞的基本原理，通过对漏洞的复现，了解格式化字符串漏洞的成因和利用方式，特别是在关键系统组件Sudo中的表现形式。掌握如何定位代码中的漏洞点，如何通过恶意输入触发漏洞，并通过调试工具验证利用的有效性。提升安全防护意识通过实验，认识格式化字符串漏洞对系统安全的威胁，理解其可能的攻击后果。熟悉漏洞修复过程，并验证修复措施的有效性。模拟实际攻击过程中可能的条件和操作步骤，为后续在生产环境中发现和应对类似漏洞积累经验。提高综合能力，通过实验提升在漏洞复现中的综合能力，包括环境搭建、源码调试、漏洞利用和修复验证等环节的实践技巧。</p><h4 id="复现目标"><a href="#复现目标" class="headerlink" title="复现目标"></a>复现目标</h4><p>​    通过输入恶意格式化字符串代码，致使存在漏洞版本的sudo触发漏洞，泄露敏感信息，泄露内存地址，进而实现任意代码执行等非法操作。</p><h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><pre><code>操作机/靶机：VMware Ubuntu64位虚拟机系统及版本：Ubuntu 12.04sudo版本：sudo1.8.3p1使用工具：终端、代码编辑器本机配置：win11家庭版 16G主存 </code></pre><h2 id="实验原理"><a href="#实验原理" class="headerlink" title="实验原理"></a>实验原理</h2><h4 id="环境变量、调试模式及源码引入"><a href="#环境变量、调试模式及源码引入" class="headerlink" title="环境变量、调试模式及源码引入"></a>环境变量、调试模式及源码引入</h4><p>​    CVE-2012-0809 是一种由格式化字符串引发的漏洞，SUDO_DEBUG 是触发漏洞的关键条件之一：当 Sudo 启用了 —enable-debug 编译选项时，SUDO_DEBUG 环境变量的值会被 sudo_debug 函数解析。漏洞的核心问题是，sudo_debug 函数未安全地处理 SUDO_DEBUG 的输入，导致格式化字符串攻击的发生。</p><p>​    此外，sudo_debug函数的源代码也值得研究。以下代码取自受漏洞影响的 Sudo 版本：</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">sudo_debug</span><span class="params">(<span class="type">int</span> level, <span class="type">const</span> <span class="type">char</span> *fmt, ...)</span> &#123;</span><br><span class="line">    va_list ap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sudo_debug_enabled) &#123;</span><br><span class="line">        va_start(ap, fmt);</span><br><span class="line">        <span class="built_in">vfprintf</span>(sudo_debug_file, fmt, ap);  <span class="comment">// 漏洞点：未验证格式化字符串</span></span><br><span class="line">        va_end(ap);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h4 id="源码漏洞点分析"><a href="#源码漏洞点分析" class="headerlink" title="源码漏洞点分析"></a>源码漏洞点分析</h4><p>​    函数参数 fmt 是一个格式化字符串，用于定义 vfprintf 的格式。问题在于：fmt 是直接从用户输入传入的（例如通过环境变量 SUDO_DEBUG），没有进行任何校验。攻击者可以通过在 SUDO_DEBUG 的值中插入格式化字符串（如 %n），强制 vfprintf 执行意外操作，写入指定内存地址。vfprintf 是一个变参函数，支持多种格式化指令（如 %s、%d、%n）。%n 指令会将已写入字符的数量存储到一个指定的内存地址。如果攻击者构造恶意的 fmt 参数，可能导致：写入任意内存地址、修改关键变量（如函数指针）、进一步实现权限提升或代码执行。</p><p>​    漏洞触发条件：Sudo 被编译时启用了 —enable-debug，环境变量 SUDO_DEBUG 被设置为恶意值。</p><h4 id="漏洞核心问题"><a href="#漏洞核心问题" class="headerlink" title="漏洞核心问题"></a>漏洞核心问题</h4><p>缺乏输入验证：</p><p>​    fmt 参数的来源是环境变量 SUDO_DEBUG，属于外部输入，但代码未对其进行过滤或校验。<br>理想情况下，fmt 应是开发者定义的固定格式字符串，而不是用户输入。</p><p>错误的日志处理设计：</p><p>​    调试日志的实现直接依赖于外部可控的字符串，未遵循安全的日志记录实践。<br>函数滥用：</p><p>​    使用了变参函数（如 vfprintf）处理未可信的输入，进一步增加了攻击面。</p><h4 id="修复方式"><a href="#修复方式" class="headerlink" title="修复方式"></a>修复方式</h4><p>​    在后续版本中（如 Sudo 1.8.3p2），开发者修复了该漏洞，通过改进 sudo_debug 函数的实现，避免格式化字符串漏洞：</p><p>固定格式字符串：</p><p>​    确保格式化字符串是固定值，而非用户可控输入：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">fprintf</span>(sudo_debug_file, <span class="string">&quot;%s&quot;</span>, user_input);  <span class="comment">// 安全的日志记录</span></span><br></pre></td></tr></table></figure><br>严格校验：</p><p>​    对环境变量 SUDO_DEBUG 的值进行解析和验证，防止恶意内容的注入。<br>替换不安全函数：</p><p>​    使用安全函数（如 snprintf）替换容易产生漏洞的变参函数。</p><h4 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h4><p>​    攻击者可通过精心构造的格式化字符串，利用 %n /%x/%s等格式化字符串指令构造恶意代码触发漏洞，泄露敏感信息，向指定内存地址写入数据，进而实现任意代码执行等非法操作。</p><h2 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h2><h4 id="1-Ubuntu旧版本下载以及sudo版本回滚"><a href="#1-Ubuntu旧版本下载以及sudo版本回滚" class="headerlink" title="1. Ubuntu旧版本下载以及sudo版本回滚"></a>1. Ubuntu旧版本下载以及sudo版本回滚</h4><p>​    通过查阅资料可知，CVE-2012-0809漏洞高概率存在于Ubuntu10.04~12.04版本中。若Ubuntu版本过高，则会降低对sudo版本的兼容性。在互联网上寻找Ubuntu12.04 ISO镜像文件下载：</p><p><img src="../img/屏幕截图 2024-11-26 135728.png" alt="1"></p><p>​    具体安装过程以及系统初始化设置此处略过。</p><p>​    打开刚刚装好的Ubuntu12.04终端，输入命令<code>wget https://www.sudo.ws/dist/sudo-1.8.3p1.tar.gz</code>下载旧版本的sudo1.8.3p1安装包：</p><p><img src="../img/屏幕截图 2024-11-26 143808.png" alt="屏幕截图 2024-11-26 143808"></p><p>​    解压并进入目录：</p><p><img src="../img/屏幕截图 2024-11-26 150747.png" alt="屏幕截图 2024-11-26 150747"></p><p><img src="../img/屏幕截图 2024-11-26 145747.png" alt="屏幕截图 2024-11-26 145747"></p><p>​    配置并安装旧版本sudo：</p><p><img src="../img/屏幕截图 2024-11-26 152502.png" alt="屏幕截图 2024-11-26 152502"></p><p>​    查看sudo版本，安装成功：</p><p><img src="../img/屏幕截图 2024-11-26 152633.png" alt="屏幕截图 2024-11-26 152633"></p><h4 id="2-恶意代码编写及测试"><a href="#2-恶意代码编写及测试" class="headerlink" title="2. 恶意代码编写及测试"></a>2. 恶意代码编写及测试</h4><p>​    通过编写容易触发漏洞的恶意代码，向sudo_debug函数传递字符和格式化字符串，进而触发当前sudo版本的漏洞。具体原理上述已经提及，此处不再赘述。</p><p>​    恶意代码如下：</p><p><img src="../img/屏幕截图 2024-11-26 153530.png" alt="屏幕截图 2024-11-26 153530"></p><p>​    赋予其可执行权限：</p><p><img src="../img/屏幕截图 2024-11-26 153729.png" alt="屏幕截图 2024-11-26 153729"></p><p>​    此时，由于我们还没有编辑sudo_debug环境变量以及调试功能，故上述代码运行结果应该为正常结果：</p><p><img src="../img/屏幕截图 2024-11-26 183131.png" alt="屏幕截图 2024-11-26 183131"></p><h4 id="3-配置环境变量、打开调试模式"><a href="#3-配置环境变量、打开调试模式" class="headerlink" title="3. 配置环境变量、打开调试模式"></a>3. 配置环境变量、打开调试模式</h4><p>​    查阅案例资料可知，sudo漏洞触发于打开调试模式之后。当 Sudo 启用了 —enable-debug 编译选项时，SUDO_DEBUG 环境变量的值会被 sudo_debug 函数解析。漏洞的核心问题是，sudo_debug 函数未安全地处理 SUDO_DEBUG 的输入，导致格式化字符串攻击的发生。首先，我们将SUDO_DEBUG环境变量设置为1~9之间任意一个数，此处我将其设置为9以获得最详细的调试信息：</p><p><img src="../img/屏幕截图 2024-11-26 193220.png" alt="屏幕截图 2024-11-26 193220"></p><p>​    同时，我们需要使用visudo，修改sudoer文件的内容，添加一行<code>Default debug</code>以辅助开启调试模式：</p><p><img src="../img/屏幕截图 2024-11-26 194213.png" alt="屏幕截图 2024-11-26 194213"></p><p><img src="../img/屏幕截图 2024-11-26 194330.png" alt="屏幕截图 2024-11-26 194330"></p><h4 id="4-漏洞复现及分析"><a href="#4-漏洞复现及分析" class="headerlink" title="4. 漏洞复现及分析"></a>4. 漏洞复现及分析</h4><p>​    经过第3步的操作后，sudo_debug调试模式已被打开，可以向该函数传入格式化字符串并触发漏洞。此时我们再次运行test.sh文件，结果如下：</p><p><img src="../img/屏幕截图 2024-11-26 194749.png" alt="屏幕截图 2024-11-26 194749"></p><p>​    分析可知，除了打印出AAAA原本应该打印出的内容，第5~第12字符还打印出了字符‘A’的16进制ASCII码，第13~第28字符打印出了内存地址，后4字节则为栈上内容。</p><h4 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5. 漏洞修复"></a>5. 漏洞修复</h4><p>​    要想修复上述漏洞，可以下载并安装修复版本的sudo（1.8.3p2及以上），这个方法当然也是最有效的，此处不再演示此方法。</p><p>​    此处我们使用的方法是删除sudoer.tmp文件中添加的代码并将环境变量SUDO_DEBUG的值置null：</p><p><img src="../img/屏幕截图 2024-11-26 195651.png" alt="屏幕截图 2024-11-26 195651"></p><p>再次运行test.sh文件，输出结果回到正常：</p><p><img src="../img/屏幕截图 2024-11-26 195852.png" alt="屏幕截图 2024-11-26 195852"></p><h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><p>​    通过实验，我们成功复现了 sudo_debug 函数的格式化字符串漏洞，证明了攻击者可以利用该漏洞执行任意代码。实验显示，该漏洞仅在 Sudo 启用调试模式的情况下可被利用。</p><p>​    格式化字符串漏洞虽然常见，但在关键组件 Sudo中，影响尤其严重。此类漏洞的防范主要依赖于严格的输入验证和正确的格式化字符串使用方法。</p><p>​    修复建议：使用安全的字符串函数（如 snprintf）代替不安全的函数、在调试信息中避免直接处理用户输入、及时升级到修复该漏洞的 Sudo 版本（如 1.8.3p2）。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;Sudo-sudo-debug格式化字符串漏洞&quot;&gt;&lt;a href=&quot;#Sudo-sudo-debug格式化字符串漏洞&quot; class=&quot;headerlink&quot; title=&quot;Sudo/sudo_debug格式化字符串漏洞&quot;&gt;&lt;/a&gt;Sudo/sudo_debug格式</summary>
+      
+    
+    
+    
+    <category term="编程" scheme="http://stevezjq.github.io/categories/%E7%BC%96%E7%A8%8B/"/>
+    
+    
+    <category term="漏洞" scheme="http://stevezjq.github.io/tags/%E6%BC%8F%E6%B4%9E/"/>
+    
+  </entry>
+  
+  <entry>
     <title>html基础语法简述汇总</title>
     <link href="http://stevezjq.github.io/posts/ba881b0.html"/>
     <id>http://stevezjq.github.io/posts/ba881b0.html</id>
     <published>2024-05-16T08:08:27.000Z</published>
-    <updated>2024-05-16T08:08:27.609Z</updated>
+    <updated>2024-11-26T12:14:29.021Z</updated>
     
     
     
@@ -34,7 +58,7 @@
     <link href="http://stevezjq.github.io/posts/a1f7af40.html"/>
     <id>http://stevezjq.github.io/posts/a1f7af40.html</id>
     <published>2024-05-16T08:04:36.000Z</published>
-    <updated>2024-05-16T08:04:36.415Z</updated>
+    <updated>2024-05-16T08:08:48.002Z</updated>
     
     
     

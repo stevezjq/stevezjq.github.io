@@ -1,0 +1,399 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Sudo/sudo_debug格式化字符串漏洞 | steve's blog</title><meta name="author" content="stevezjq"><meta name="copyright" content="stevezjq"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="referrer" content="no-referrer"><meta name="description" content="Sudo&#x2F;sudo_debug格式化字符串漏洞实验目的学习目标​    学习漏洞的基本原理，通过对漏洞的复现，了解格式化字符串漏洞的成因和利用方式，特别是在关键系统组件Sudo中的表现形式。掌握如何定位代码中的漏洞点，如何通过恶意输入触发漏洞，并通过调试工具验证利用的有效性。提升安全防护意识通过实验，认识格式化字符串漏洞对系统安全的威胁，理解其可能的攻击后果。熟悉漏洞修复过程，并验证修复措施的有效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sudo&#x2F;sudo_debug格式化字符串漏洞">
+<meta property="og:url" content="http://stevezjq.github.io/posts/72ce4e2b.html">
+<meta property="og:site_name" content="steve&#39;s blog">
+<meta property="og:description" content="Sudo&#x2F;sudo_debug格式化字符串漏洞实验目的学习目标​    学习漏洞的基本原理，通过对漏洞的复现，了解格式化字符串漏洞的成因和利用方式，特别是在关键系统组件Sudo中的表现形式。掌握如何定位代码中的漏洞点，如何通过恶意输入触发漏洞，并通过调试工具验证利用的有效性。提升安全防护意识通过实验，认识格式化字符串漏洞对系统安全的威胁，理解其可能的攻击后果。熟悉漏洞修复过程，并验证修复措施的有效">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://5b0988e595225.cdn.sohucs.com/images/20190704/384945dfed4f4dbab5960b4f789cc863.png">
+<meta property="article:published_time" content="2024-11-26T12:16:54.000Z">
+<meta property="article:modified_time" content="2024-11-26T12:30:24.756Z">
+<meta property="article:author" content="stevezjq">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://5b0988e595225.cdn.sohucs.com/images/20190704/384945dfed4f4dbab5960b4f789cc863.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://stevezjq.github.io/posts/72ce4e2b.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/source/manifest.json"/><meta name="msapplication-TileColor" content="#CC33FF"/><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/16.png"/><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Sudo/sudo_debug格式化字符串漏洞',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-11-26 20:30:24'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu@1.1.6/lib/clock.min.css" /><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="steve's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://b0.bdstatic.com/2609910f2091c0743d82fd09ff76c400.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/index.html"><i class="fa-fw fas fa-home"></i><span> 追番</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://5b0988e595225.cdn.sohucs.com/images/20190704/384945dfed4f4dbab5960b4f789cc863.png')"><nav id="nav"><span id="blog-info"><a href="/" title="steve's blog"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s21.ax1x.com/2024/03/05/pFDTPC6.png"/><span class="site-name">steve's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/index.html"><i class="fa-fw fas fa-home"></i><span> 追番</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Sudo/sudo_debug格式化字符串漏洞</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-11-26T12:16:54.000Z" title="发表于 2024-11-26 20:16:54">2024-11-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-11-26T12:30:24.756Z" title="更新于 2024-11-26 20:30:24">2024-11-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E7%A8%8B/">编程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Sudo/sudo_debug格式化字符串漏洞"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Sudo-sudo-debug格式化字符串漏洞"><a href="#Sudo-sudo-debug格式化字符串漏洞" class="headerlink" title="Sudo/sudo_debug格式化字符串漏洞"></a>Sudo/sudo_debug格式化字符串漏洞</h1><h2 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h2><h4 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h4><p>​    学习漏洞的基本原理，通过对漏洞的复现，了解格式化字符串漏洞的成因和利用方式，特别是在关键系统组件Sudo中的表现形式。掌握如何定位代码中的漏洞点，如何通过恶意输入触发漏洞，并通过调试工具验证利用的有效性。提升安全防护意识通过实验，认识格式化字符串漏洞对系统安全的威胁，理解其可能的攻击后果。熟悉漏洞修复过程，并验证修复措施的有效性。模拟实际攻击过程中可能的条件和操作步骤，为后续在生产环境中发现和应对类似漏洞积累经验。提高综合能力，通过实验提升在漏洞复现中的综合能力，包括环境搭建、源码调试、漏洞利用和修复验证等环节的实践技巧。</p>
+<h4 id="复现目标"><a href="#复现目标" class="headerlink" title="复现目标"></a>复现目标</h4><p>​    通过输入恶意格式化字符串代码，致使存在漏洞版本的sudo触发漏洞，泄露敏感信息，泄露内存地址，进而实现任意代码执行等非法操作。</p>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><pre><code>操作机/靶机：VMware Ubuntu64位
+虚拟机系统及版本：Ubuntu 12.04
+sudo版本：sudo1.8.3p1
+使用工具：终端、代码编辑器
+本机配置：win11家庭版 16G主存 
+</code></pre><h2 id="实验原理"><a href="#实验原理" class="headerlink" title="实验原理"></a>实验原理</h2><h4 id="环境变量、调试模式及源码引入"><a href="#环境变量、调试模式及源码引入" class="headerlink" title="环境变量、调试模式及源码引入"></a>环境变量、调试模式及源码引入</h4><p>​    CVE-2012-0809 是一种由格式化字符串引发的漏洞，SUDO_DEBUG 是触发漏洞的关键条件之一：当 Sudo 启用了 —enable-debug 编译选项时，SUDO_DEBUG 环境变量的值会被 sudo_debug 函数解析。漏洞的核心问题是，sudo_debug 函数未安全地处理 SUDO_DEBUG 的输入，导致格式化字符串攻击的发生。</p>
+<p>​    此外，sudo_debug函数的源代码也值得研究。以下代码取自受漏洞影响的 Sudo 版本：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">sudo_debug</span><span class="params">(<span class="type">int</span> level, <span class="type">const</span> <span class="type">char</span> *fmt, ...)</span> &#123;</span><br><span class="line">    va_list ap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sudo_debug_enabled) &#123;</span><br><span class="line">        va_start(ap, fmt);</span><br><span class="line">        <span class="built_in">vfprintf</span>(sudo_debug_file, fmt, ap);  <span class="comment">// 漏洞点：未验证格式化字符串</span></span><br><span class="line">        va_end(ap);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="源码漏洞点分析"><a href="#源码漏洞点分析" class="headerlink" title="源码漏洞点分析"></a>源码漏洞点分析</h4><p>​    函数参数 fmt 是一个格式化字符串，用于定义 vfprintf 的格式。问题在于：fmt 是直接从用户输入传入的（例如通过环境变量 SUDO_DEBUG），没有进行任何校验。攻击者可以通过在 SUDO_DEBUG 的值中插入格式化字符串（如 %n），强制 vfprintf 执行意外操作，写入指定内存地址。vfprintf 是一个变参函数，支持多种格式化指令（如 %s、%d、%n）。%n 指令会将已写入字符的数量存储到一个指定的内存地址。如果攻击者构造恶意的 fmt 参数，可能导致：写入任意内存地址、修改关键变量（如函数指针）、进一步实现权限提升或代码执行。</p>
+<p>​    漏洞触发条件：Sudo 被编译时启用了 —enable-debug，环境变量 SUDO_DEBUG 被设置为恶意值。</p>
+<h4 id="漏洞核心问题"><a href="#漏洞核心问题" class="headerlink" title="漏洞核心问题"></a>漏洞核心问题</h4><p>缺乏输入验证：</p>
+<p>​    fmt 参数的来源是环境变量 SUDO_DEBUG，属于外部输入，但代码未对其进行过滤或校验。<br>理想情况下，fmt 应是开发者定义的固定格式字符串，而不是用户输入。</p>
+<p>错误的日志处理设计：</p>
+<p>​    调试日志的实现直接依赖于外部可控的字符串，未遵循安全的日志记录实践。<br>函数滥用：</p>
+<p>​    使用了变参函数（如 vfprintf）处理未可信的输入，进一步增加了攻击面。</p>
+<h4 id="修复方式"><a href="#修复方式" class="headerlink" title="修复方式"></a>修复方式</h4><p>​    在后续版本中（如 Sudo 1.8.3p2），开发者修复了该漏洞，通过改进 sudo_debug 函数的实现，避免格式化字符串漏洞：</p>
+<p>固定格式字符串：</p>
+<p>​    确保格式化字符串是固定值，而非用户可控输入：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">fprintf</span>(sudo_debug_file, <span class="string">&quot;%s&quot;</span>, user_input);  <span class="comment">// 安全的日志记录</span></span><br></pre></td></tr></table></figure><br>严格校验：</p>
+<p>​    对环境变量 SUDO_DEBUG 的值进行解析和验证，防止恶意内容的注入。<br>替换不安全函数：</p>
+<p>​    使用安全函数（如 snprintf）替换容易产生漏洞的变参函数。</p>
+<h4 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h4><p>​    攻击者可通过精心构造的格式化字符串，利用 %n /%x/%s等格式化字符串指令构造恶意代码触发漏洞，泄露敏感信息，向指定内存地址写入数据，进而实现任意代码执行等非法操作。</p>
+<h2 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h2><h4 id="1-Ubuntu旧版本下载以及sudo版本回滚"><a href="#1-Ubuntu旧版本下载以及sudo版本回滚" class="headerlink" title="1. Ubuntu旧版本下载以及sudo版本回滚"></a>1. Ubuntu旧版本下载以及sudo版本回滚</h4><p>​    通过查阅资料可知，CVE-2012-0809漏洞高概率存在于Ubuntu10.04~12.04版本中。若Ubuntu版本过高，则会降低对sudo版本的兼容性。在互联网上寻找Ubuntu12.04 ISO镜像文件下载：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 135728.png" alt="1"></p>
+<p>​    具体安装过程以及系统初始化设置此处略过。</p>
+<p>​    打开刚刚装好的Ubuntu12.04终端，输入命令<code>wget https://www.sudo.ws/dist/sudo-1.8.3p1.tar.gz</code>下载旧版本的sudo1.8.3p1安装包：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 143808.png" alt="屏幕截图 2024-11-26 143808"></p>
+<p>​    解压并进入目录：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 150747.png" alt="屏幕截图 2024-11-26 150747"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 145747.png" alt="屏幕截图 2024-11-26 145747"></p>
+<p>​    配置并安装旧版本sudo：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 152502.png" alt="屏幕截图 2024-11-26 152502"></p>
+<p>​    查看sudo版本，安装成功：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 152633.png" alt="屏幕截图 2024-11-26 152633"></p>
+<h4 id="2-恶意代码编写及测试"><a href="#2-恶意代码编写及测试" class="headerlink" title="2. 恶意代码编写及测试"></a>2. 恶意代码编写及测试</h4><p>​    通过编写容易触发漏洞的恶意代码，向sudo_debug函数传递字符和格式化字符串，进而触发当前sudo版本的漏洞。具体原理上述已经提及，此处不再赘述。</p>
+<p>​    恶意代码如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 153530.png" alt="屏幕截图 2024-11-26 153530"></p>
+<p>​    赋予其可执行权限：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 153729.png" alt="屏幕截图 2024-11-26 153729"></p>
+<p>​    此时，由于我们还没有编辑sudo_debug环境变量以及调试功能，故上述代码运行结果应该为正常结果：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 183131.png" alt="屏幕截图 2024-11-26 183131"></p>
+<h4 id="3-配置环境变量、打开调试模式"><a href="#3-配置环境变量、打开调试模式" class="headerlink" title="3. 配置环境变量、打开调试模式"></a>3. 配置环境变量、打开调试模式</h4><p>​    查阅案例资料可知，sudo漏洞触发于打开调试模式之后。当 Sudo 启用了 —enable-debug 编译选项时，SUDO_DEBUG 环境变量的值会被 sudo_debug 函数解析。漏洞的核心问题是，sudo_debug 函数未安全地处理 SUDO_DEBUG 的输入，导致格式化字符串攻击的发生。首先，我们将SUDO_DEBUG环境变量设置为1~9之间任意一个数，此处我将其设置为9以获得最详细的调试信息：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 193220.png" alt="屏幕截图 2024-11-26 193220"></p>
+<p>​    同时，我们需要使用visudo，修改sudoer文件的内容，添加一行<code>Default debug</code>以辅助开启调试模式：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 194213.png" alt="屏幕截图 2024-11-26 194213"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 194330.png" alt="屏幕截图 2024-11-26 194330"></p>
+<h4 id="4-漏洞复现及分析"><a href="#4-漏洞复现及分析" class="headerlink" title="4. 漏洞复现及分析"></a>4. 漏洞复现及分析</h4><p>​    经过第3步的操作后，sudo_debug调试模式已被打开，可以向该函数传入格式化字符串并触发漏洞。此时我们再次运行test.sh文件，结果如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 194749.png" alt="屏幕截图 2024-11-26 194749"></p>
+<p>​    分析可知，除了打印出AAAA原本应该打印出的内容，第5~第12字符还打印出了字符‘A’的16进制ASCII码，第13~第28字符打印出了内存地址，后4字节则为栈上内容。</p>
+<h4 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5. 漏洞修复"></a>5. 漏洞修复</h4><p>​    要想修复上述漏洞，可以下载并安装修复版本的sudo（1.8.3p2及以上），这个方法当然也是最有效的，此处不再演示此方法。</p>
+<p>​    此处我们使用的方法是删除sudoer.tmp文件中添加的代码并将环境变量SUDO_DEBUG的值置null：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 195651.png" alt="屏幕截图 2024-11-26 195651"></p>
+<p>再次运行test.sh文件，输出结果回到正常：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="../img/屏幕截图 2024-11-26 195852.png" alt="屏幕截图 2024-11-26 195852"></p>
+<h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><p>​    通过实验，我们成功复现了 sudo_debug 函数的格式化字符串漏洞，证明了攻击者可以利用该漏洞执行任意代码。实验显示，该漏洞仅在 Sudo 启用调试模式的情况下可被利用。</p>
+<p>​    格式化字符串漏洞虽然常见，但在关键组件 Sudo中，影响尤其严重。此类漏洞的防范主要依赖于严格的输入验证和正确的格式化字符串使用方法。</p>
+<p>​    修复建议：使用安全的字符串函数（如 snprintf）代替不安全的函数、在调试信息中避免直接处理用户输入、及时升级到修复该漏洞的 Sudo 版本（如 1.8.3p2）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://stevezjq.github.io">stevezjq</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://stevezjq.github.io/posts/72ce4e2b.html">http://stevezjq.github.io/posts/72ce4e2b.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://stevezjq.github.io" target="_blank">steve's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%B4%9E/">漏洞</a></div><div class="post_share"><div class="social-share" data-image="https://5b0988e595225.cdn.sohucs.com/images/20190704/384945dfed4f4dbab5960b4f789cc863.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/posts/ba881b0.html" title="html基础语法简述汇总"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">html基础语法简述汇总</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://b0.bdstatic.com/2609910f2091c0743d82fd09ff76c400.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">stevezjq</div><div class="author-info__description">计科大学牲/数码硬件爱好者/高画质游戏爱好者</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/stevezjq"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/stevezjq" target="_blank" title="Github"><i class="fab fa-github" style="color: #006666;"></i></a><a class="social-icon" href="mailto:3426430946@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #006666;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">随缘更新~</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Sudo-sudo-debug%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.</span> <span class="toc-text">Sudo&#x2F;sudo_debug格式化字符串漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="toc-number">1.1.</span> <span class="toc-text">实验目的</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">学习目标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%9B%AE%E6%A0%87"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">复现目标</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">实验原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E3%80%81%E8%B0%83%E8%AF%95%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%BA%90%E7%A0%81%E5%BC%95%E5%85%A5"><span class="toc-number">1.3.0.1.</span> <span class="toc-text">环境变量、调试模式及源码引入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E6%BC%8F%E6%B4%9E%E7%82%B9%E5%88%86%E6%9E%90"><span class="toc-number">1.3.0.2.</span> <span class="toc-text">源码漏洞点分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.0.3.</span> <span class="toc-text">漏洞核心问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E5%A4%8D%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.0.4.</span> <span class="toc-text">修复方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.0.5.</span> <span class="toc-text">攻击方式</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.</span> <span class="toc-text">实验步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Ubuntu%E6%97%A7%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD%E4%BB%A5%E5%8F%8Asudo%E7%89%88%E6%9C%AC%E5%9B%9E%E6%BB%9A"><span class="toc-number">1.4.0.1.</span> <span class="toc-text">1. Ubuntu旧版本下载以及sudo版本回滚</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%BC%96%E5%86%99%E5%8F%8A%E6%B5%8B%E8%AF%95"><span class="toc-number">1.4.0.2.</span> <span class="toc-text">2. 恶意代码编写及测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E3%80%81%E6%89%93%E5%BC%80%E8%B0%83%E8%AF%95%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.4.0.3.</span> <span class="toc-text">3. 配置环境变量、打开调试模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-number">1.4.0.4.</span> <span class="toc-text">4. 漏洞复现及分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.4.0.5.</span> <span class="toc-text">5. 漏洞修复</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">实验总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/72ce4e2b.html" title="Sudo/sudo_debug格式化字符串漏洞"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://5b0988e595225.cdn.sohucs.com/images/20190704/384945dfed4f4dbab5960b4f789cc863.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Sudo/sudo_debug格式化字符串漏洞"/></a><div class="content"><a class="title" href="/posts/72ce4e2b.html" title="Sudo/sudo_debug格式化字符串漏洞">Sudo/sudo_debug格式化字符串漏洞</a><time datetime="2024-11-26T12:16:54.000Z" title="发表于 2024-11-26 20:16:54">2024-11-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/ba881b0.html" title="html基础语法简述汇总">html基础语法简述汇总</a><time datetime="2024-05-16T08:08:27.000Z" title="发表于 2024-05-16 16:08:27">2024-05-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/a1f7af40.html" title="8大排序算法汇总">8大排序算法汇总</a><time datetime="2024-05-16T08:04:36.000Z" title="发表于 2024-05-16 16:04:36">2024-05-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/83a1182.html" title="c++实现AES加密算法"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s21.ax1x.com/2024/04/29/pkFl7yF.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="c++实现AES加密算法"/></a><div class="content"><a class="title" href="/posts/83a1182.html" title="c++实现AES加密算法">c++实现AES加密算法</a><time datetime="2024-04-29T08:49:12.000Z" title="发表于 2024-04-29 16:49:12">2024-04-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3bbdaf09.html" title="c++实现DES加密算法"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s21.ax1x.com/2024/04/29/pkFluZ9.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="c++实现DES加密算法"/></a><div class="content"><a class="title" href="/posts/3bbdaf09.html" title="c++实现DES加密算法">c++实现DES加密算法</a><time datetime="2024-04-29T07:49:12.000Z" title="发表于 2024-04-29 15:49:12">2024-04-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By stevezjq</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat-btn" type="button" title="聊天"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.8/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://stevezjq-stevespace.hf.space',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://stevezjq-stevespace.hf.space',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo@1.6.31/dist/twikoo.all.min.js').then(init)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="3426430946" data-server="tencent" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="ture" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-show-text.min.js" data-mobile="ture" data-text="(●'◡'●),(˵¯͒〰¯͒˵),(●• ̀ω•́ )✧,٩(๑•̀ω•́๑)۶,o( ❛ᴗ❛ )o,(&gt;´ω`&lt; ),( ￣ ▽￣),\(`Δ’)/,⌓‿⌓,། - _ - །,(ꐦÒ‸Ó),dT-Tb,(ง •̀_•́)ง" data-fontsize="15px" data-random="ture" async="async"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div class="app-refresh" id="app-refresh" style="position: fixed;top: -2.2rem;left: 0;right: 0;z-index: 99999;padding: 0 1rem;font-size: 15px;height: 2.2rem;transition: all 0.3s ease;"><div class="app-refresh-wrap" style=" display: flex;color: #fff;height: 100%;align-items: center;justify-content: center;"><label>✨ 有新文章啦！ 👉</label><a href="javascript:void(0)" onclick="location.reload()"><span style="color: #fff;text-decoration: underline;cursor: pointer;">🍗点击食用🍔</span></a></div></div><script>if ('serviceWorker' in navigator) {
+if (navigator.serviceWorker.controller) {
+navigator.serviceWorker.addEventListener('controllerchange', function() {
+showNotification()
+})
+}
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/sw.js')
+})
+}
+function showNotification() {
+if (GLOBAL_CONFIG.Snackbar) {
+var snackbarBg =
+document.documentElement.getAttribute('data-theme') === 'light' ?
+GLOBAL_CONFIG.Snackbar.bgLight :
+GLOBAL_CONFIG.Snackbar.bgDark
+var snackbarPos = GLOBAL_CONFIG.Snackbar.position
+Snackbar.show({
+text: '✨ 有新文章啦！ 👉',
+backgroundColor: snackbarBg,
+duration: 500000,
+pos: snackbarPos,
+actionText: '🍗点击食用🍔',
+actionTextColor: '#fff',
+onActionClick: function(e) {
+location.reload()
+},
+})
+} else {
+var showBg =
+document.documentElement.getAttribute('data-theme') === 'light' ?
+'#3b70fc' :
+'#1f1f1f'
+var cssText = `top: 0; background: ${showBg};`
+document.getElementById('app-refresh').style.cssText = cssText
+}
+}</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu@1.1.6/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var qweather_key = '78aa57b05fad46ca8ff72759e1e6eebf';
+  var gaud_map_key = '98e7151822952dda5998039e2eeff6b9';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '112.6534116,27.96920845';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu@1.1.6/lib/clock.min.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><script async src="/js/ali_font.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
