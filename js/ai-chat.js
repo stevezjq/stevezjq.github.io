@@ -560,36 +560,66 @@
   // ---------------------------------------------------------------------------
   // 注入导航栏 AI 按钮
   // ---------------------------------------------------------------------------
-  function injectNavButton() {
-    if (document.getElementById('ai-nav-button')) return;
+  // 关闭 Butterfly 移动端侧边栏（若已展开），避免遮挡对话框
+  function closeMobileSidebar() {
+    try {
+      var mask = document.getElementById('menu-mask');
+      var sidebar = document.getElementById('sidebar-menus');
+      if (sidebar && sidebar.classList.contains('open') && mask) {
+        mask.click();
+      }
+    } catch (e) { /* 静默 */ }
+  }
 
+  function openAIFromMobile() {
+    closeMobileSidebar();
+    // 等侧边栏收起动画启动后再打开对话框，视觉上更连贯
+    setTimeout(openAI, 120);
+  }
+
+  function injectNavButton() {
     var html =
       '<a class="site-page" href="javascript:void(0);">' +
       '<i class="fas fa-magic fa-fw"></i><span> AI工具</span></a>';
 
-    // 优先作为一个 .menus_item 注入到 .menus_items 容器内部，
-    // 这样能继承 Butterfly 菜单项的排版（inline-block，与其余按钮同排对齐）。
-    var menusItems = document.querySelector('#menus .menus_items');
-    if (menusItems) {
-      var item = document.createElement('div');
-      item.id = 'ai-nav-button';
-      item.className = 'menus_item';
-      item.innerHTML = html;
-      item.addEventListener('click', openAI);
-      menusItems.insertBefore(item, menusItems.firstChild);
-      return;
+    // 1) 桌面端：作为一个 .menus_item 注入到 #menus .menus_items 容器内部，
+    //    继承 Butterfly 菜单项的排版（inline-block，与其余按钮同排对齐）。
+    if (!document.getElementById('ai-nav-button')) {
+      var menusItems = document.querySelector('#menus .menus_items');
+      if (menusItems) {
+        var item = document.createElement('div');
+        item.id = 'ai-nav-button';
+        item.className = 'menus_item';
+        item.innerHTML = html;
+        item.addEventListener('click', openAI);
+        menusItems.insertBefore(item, menusItems.firstChild);
+      } else {
+        // 兜底：若菜单容器尚未渲染，则挂在 #search-button 之后，并用 inline 排版避免断行。
+        var searchBtn = document.getElementById('search-button');
+        if (searchBtn && searchBtn.parentNode) {
+          var aiBtn = document.createElement('span');
+          aiBtn.id = 'ai-nav-button';
+          aiBtn.style.display = 'inline';
+          aiBtn.style.padding = '0 0 0 14px';
+          aiBtn.innerHTML = html;
+          aiBtn.addEventListener('click', openAI);
+          searchBtn.parentNode.insertBefore(aiBtn, searchBtn.nextSibling);
+        }
+      }
     }
 
-    // 兜底：若菜单容器尚未渲染，则挂在 #search-button 之后，并用 inline 排版避免断行。
-    var searchBtn = document.getElementById('search-button');
-    if (searchBtn && searchBtn.parentNode) {
-      var aiBtn = document.createElement('span');
-      aiBtn.id = 'ai-nav-button';
-      aiBtn.style.display = 'inline';
-      aiBtn.style.padding = '0 0 0 14px';
-      aiBtn.innerHTML = html;
-      aiBtn.addEventListener('click', openAI);
-      searchBtn.parentNode.insertBefore(aiBtn, searchBtn.nextSibling);
+    // 2) 移动端：桌面 .menus_items 在 hide-menu 状态下被 display:none，
+    //    汉堡菜单打开的是 #sidebar-menus 里另一份 menus_items，需要单独注入。
+    if (!document.getElementById('ai-nav-button-mobile')) {
+      var sidebarMenus = document.querySelector('#sidebar-menus .menus_items');
+      if (sidebarMenus) {
+        var mItem = document.createElement('div');
+        mItem.id = 'ai-nav-button-mobile';
+        mItem.className = 'menus_item';
+        mItem.innerHTML = html;
+        mItem.addEventListener('click', openAIFromMobile);
+        sidebarMenus.insertBefore(mItem, sidebarMenus.firstChild);
+      }
     }
   }
 
@@ -607,7 +637,7 @@
       }
     });
 
-    // Pjax / 动态导航栏重绘时重新注入按钮
+    // Pjax / 动态导航栏重绘时重新注入按钮（桌面 + 移动侧栏两处都要检查）
     if (window.pjax) {
       document.addEventListener('pjax:complete', function () {
         injectNavButton();
@@ -617,7 +647,9 @@
     var tries = 0;
     var timer = setInterval(function () {
       injectNavButton();
-      if (++tries > 10 || document.getElementById('ai-nav-button')) clearInterval(timer);
+      var hasDesktop = !!document.getElementById('ai-nav-button');
+      var hasMobile = !!document.getElementById('ai-nav-button-mobile');
+      if (++tries > 10 || (hasDesktop && hasMobile)) clearInterval(timer);
     }, 500);
   }
 

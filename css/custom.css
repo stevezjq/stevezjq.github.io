@@ -721,4 +721,49 @@ body.ai-search-show #ai-search-wrap {
     #ai-nav-button-mobile {
         display: block;
     }
+
+    /* 对话框内部微调，避免贴边 */
+    #ai-search-header {
+        padding: 12px 14px;
+    }
+
+    #ai-messages {
+        padding: 14px;
+    }
+
+    .ai-msg-bubble {
+        max-width: 82%;
+    }
+
+    #ai-input-area {
+        padding: 10px 12px;
+    }
+}
+
+/* ==========================================================================
+   看板娘（#live2d-widget）移动端尺寸自适应
+   容器宽高由 _config.butterfly.yml 以内联样式写死为 200x300，
+   canvas 尺寸在 Live2dWidget.init 时固定，无法用 width/height 直接改，
+   因此用 transform:scale 视觉缩放，锚点保持左下角。
+   ========================================================================== */
+#live2d-widget {
+    transform-origin: bottom left;
+    will-change: transform;
+}
+
+@media screen and (max-width: 768px) {
+    #live2d-widget {
+        transform: scale(0.65);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #live2d-widget {
+        transform: scale(0.55);
+    }
+}
+
+/* AI 对话框打开时暂时隐藏看板娘，避免遮挡 */
+body.ai-search-show #live2d-widget {
+    display: none !important;
 }
